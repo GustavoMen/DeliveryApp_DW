@@ -9,7 +9,7 @@ class SplashPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: ColoredBox(
-        color: Color(0XFF140E0E),
+        color: const Color(0XFF140E0E),
         child: Stack(
           children: [
             Align(
@@ -34,7 +34,9 @@ class SplashPage extends StatelessWidget {
                   ),
                   DeliveryButton(
                     label: 'ACESSAR',
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).popAndPushNamed('/home');
+                    },
                     width: context.percentWidth(0.6),
                     height: 35,
                   )
