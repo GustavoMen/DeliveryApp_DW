@@ -1,4 +1,5 @@
 import 'package:dw_delivery_app/app/core/provider/application_binding.dart';
+import 'package:dw_delivery_app/app/pages/product_detail/product_detail_router.dart';
 import 'package:flutter/material.dart';
 
 import './core/ui/theme/theme_config.dart';
@@ -15,6 +16,7 @@ class DeliveryApp extends StatelessWidget {
           MaterialApp(title: 'Delivery App', theme: ThemeConfig.theme, routes: {
         '/': (context) => const SplashPage(),
         '/home': (context) => HomeRouter.page,
+        '/productDetails': (context) => ProductDetailRouter.page,
       }),
     );
   }

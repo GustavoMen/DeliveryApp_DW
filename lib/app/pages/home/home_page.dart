@@ -1,9 +1,13 @@
 import 'package:dw_delivery_app/app/core/ui/helpers/messages.dart';
 import 'package:dw_delivery_app/app/core/ui/widgets/delivery_appbar.dart';
 import 'package:dw_delivery_app/app/models/product_model.dart';
+import 'package:dw_delivery_app/app/pages/home/home_controller.dart';
+import 'package:dw_delivery_app/app/pages/home/home_state.dart';
 import 'package:dw_delivery_app/app/pages/home/widgets/delivery_product_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../core/ui/base_state/base_state.dart';
 import '../../core/ui/helpers/loader.dart';
 
 class HomePage extends StatefulWidget {
@@ -13,48 +17,46 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with Messages {
+class _HomePageState extends BaseState<HomePage, HomeController> {
+  @override
+  onReady() {
+    controller.loadProducts();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: DeliveryAppbar(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          // showLoader();
-          // await Future.delayed(
-          //   Duration(seconds: 2),
-          // );
-          // hideLoader();
-          showError('Erro ao criar');
-          await Future.delayed(
-            Duration(seconds: 2),
-          );
-          showInfo('message');
-          await Future.delayed(
-            Duration(seconds: 2),
-          );
-          showSuccess('message');
+      body: BlocConsumer<HomeController, HomeState>(
+        listener: (context, state) {
+          state.status.matchAny(
+              any: () => hideLoader(),
+              loading: () => showLoader(),
+              error: () {
+                hideLoader();
+                showError(state.errorMessage ?? 'Erro não informado');
+              });
         },
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: 5,
-              itemBuilder: (context, index) {
-                return DeliveryProductTile(
-                  product: ProductModel(
-                      id: 0,
-                      name: 'Lanche x',
-                      description: 'description',
-                      price: 15.0,
-                      image:
-                          "https://assets.unileversolutions.com/recipes-v2/106684.jpg?imwidth=800"),
-                );
-              },
-            ),
-          )
-        ],
+        buildWhen: (previous, current) => current.status.matchAny(
+          any: () => false,
+          initial: () => true,
+          loaded: () => true,
+        ),
+        builder: (context, state) {
+          return Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  itemCount: state.products.length,
+                  itemBuilder: (context, index) {
+                    final product = state.products[index];
+                    return DeliveryProductTile(product: product);
+                  },
+                ),
+              )
+            ],
+          );
+        },
       ),
     );
   }
