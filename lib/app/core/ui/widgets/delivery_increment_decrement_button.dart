@@ -3,13 +3,13 @@ import 'package:dw_delivery_app/app/core/ui/styles/text_styles.dart';
 import 'package:flutter/material.dart';
 
 class DeliveryIncrementDecrementButton extends StatelessWidget {
-  final int amout;
+  final int amount;
   final VoidCallback incrementTap;
   final VoidCallback decrementTap;
 
   const DeliveryIncrementDecrementButton({
     super.key,
-    required this.amout,
+    required this.amount,
     required this.incrementTap,
     required this.decrementTap,
   });
@@ -38,7 +38,7 @@ class DeliveryIncrementDecrementButton extends StatelessWidget {
             ),
           ),
           Text(
-            amout.toString(),
+            amount.toString(),
             style: context.textStyles.textRegular
                 .copyWith(fontSize: 17, color: context.colors.secundary),
           ),

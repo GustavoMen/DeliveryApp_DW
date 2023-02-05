@@ -1,20 +1,39 @@
+import 'package:dw_delivery_app/app/dto/order_product_dto.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../core/ui/styles/colors_app.dart';
 import '../../../core/ui/styles/text_styles.dart';
 import '../../../models/product_model.dart';
 import '../../../core/extensions/formatter_mixin.dart';
+import '../home_controller.dart';
 
 class DeliveryProductTile extends StatelessWidget {
-  const DeliveryProductTile({super.key, required this.product});
+  const DeliveryProductTile({
+    super.key,
+    required this.product,
+    required this.orderProduct,
+  });
 
   final ProductModel product;
+  final OrderProductDto? orderProduct;
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () async {
-        await Navigator.of(context)
-            .pushNamed('/productDetails', arguments: {"product": product});
+        final controller = context.read<HomeController>();
+        final orderProductResult = await Navigator.of(context).pushNamed(
+          '/productDetails',
+          arguments: {
+            "product": product,
+            "order": orderProduct,
+          },
+        );
+
+        if (orderProductResult != null) {
+          controller.addOrUpdateBag(orderProductResult as OrderProductDto);
+        }
       },
       child: Padding(
         padding: const EdgeInsets.all(8.0),

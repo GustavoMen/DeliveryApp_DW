@@ -1,6 +1,7 @@
 import 'package:dw_delivery_app/app/core/extensions/formatter_mixin.dart';
 import 'package:dw_delivery_app/app/core/ui/base_state/base_state.dart';
 import 'package:dw_delivery_app/app/core/ui/widgets/delivery_appbar.dart';
+import 'package:dw_delivery_app/app/dto/order_product_dto.dart';
 import 'package:dw_delivery_app/app/models/product_model.dart';
 import 'package:dw_delivery_app/app/pages/product_detail/product_detail_controller.dart';
 
@@ -13,7 +14,8 @@ import '../../core/ui/widgets/delivery_increment_decrement_button.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final ProductModel product;
-  const ProductDetailPage({required this.product, super.key});
+  final OrderProductDto? order;
+  const ProductDetailPage({required this.product, super.key, this.order});
 
   @override
   State<ProductDetailPage> createState() => _ProductDetailPageState();
@@ -21,6 +23,51 @@ class ProductDetailPage extends StatefulWidget {
 
 class _ProductDetailPageState
     extends BaseState<ProductDetailPage, ProductDetailController> {
+  @override
+  void initState() {
+    super.initState();
+    final amount = widget.order?.amount ?? 1;
+    controller.initial(amount, widget.order != null);
+  }
+
+  void _showConfirmDelete(int amount) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Deseja excluir produto?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                'Cancelar',
+                style: context.textStyles.textBold.copyWith(color: Colors.red),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.of(context).pop(
+                  OrderProductDto(
+                    product: widget.product,
+                    amount: amount,
+                  ),
+                );
+              },
+              child: Text(
+                'Confirmar',
+                style: context.textStyles.textBold,
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,7 +112,7 @@ class _ProductDetailPageState
             Row(
               children: [
                 BlocBuilder<ProductDetailController, int>(
-                  builder: (context, amout) {
+                  builder: (context, amount) {
                     return Container(
                       width: context.percentWidth(0.5),
                       height: 68,
@@ -77,7 +124,7 @@ class _ProductDetailPageState
                         incrementTap: () {
                           controller.increment();
                         },
-                        amout: amout,
+                        amount: amount,
                       ),
                     );
                   },
@@ -87,31 +134,53 @@ class _ProductDetailPageState
                   height: 68,
                   padding: const EdgeInsets.all(8),
                   child: BlocBuilder<ProductDetailController, int>(
-                    builder: (context, amout) {
+                    builder: (context, amount) {
                       return ElevatedButton(
-                        onPressed: () {},
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Adicionar',
-                              style: context.textStyles.textExtraBold
-                                  .copyWith(fontSize: 13),
-                            ),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            Expanded(
-                              child: AutoSizeText(
-                                (widget.product.price * amout).currencyPTBR,
-                                maxFontSize: 13,
-                                minFontSize: 5,
-                                maxLines: 1,
-                                textAlign: TextAlign.center,
-                                style: context.textStyles.textExtraBold,
+                        style: amount == 0
+                            ? ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red)
+                            : null,
+                        onPressed: () {
+                          if (amount == 0) {
+                            _showConfirmDelete(amount);
+                          } else {
+                            Navigator.of(context).pop(
+                              OrderProductDto(
+                                product: widget.product,
+                                amount: amount,
                               ),
-                            ),
-                          ],
+                            );
+                          }
+                        },
+                        child: Visibility(
+                          visible: amount > 0,
+                          replacement: Text(
+                            'Excluir Produto',
+                            style: context.textStyles.textExtraBold,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Adicionar',
+                                style: context.textStyles.textExtraBold
+                                    .copyWith(fontSize: 13),
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Expanded(
+                                child: AutoSizeText(
+                                  (widget.product.price * amount).currencyPTBR,
+                                  maxFontSize: 13,
+                                  minFontSize: 5,
+                                  maxLines: 1,
+                                  textAlign: TextAlign.center,
+                                  style: context.textStyles.textExtraBold,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     },
