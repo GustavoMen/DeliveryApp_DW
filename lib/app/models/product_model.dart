@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 class ProductModel {
@@ -6,6 +7,7 @@ class ProductModel {
   final String description;
   final double price;
   final String image;
+
   ProductModel({
     required this.id,
     required this.name,
@@ -15,7 +17,7 @@ class ProductModel {
   });
 
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       'id': id,
       'name': name,
       'description': description,
@@ -26,10 +28,10 @@ class ProductModel {
 
   factory ProductModel.fromMap(Map<String, dynamic> map) {
     return ProductModel(
-      id: map['id'].toInt() ?? 0,
+      id: map['id']?.toInt() ?? 0,
       name: map['name'] ?? '',
       description: map['description'] ?? '',
-      price: map['price'].toDouble() ?? 0.0,
+      price: map['price']?.toDouble() ?? 0.0,
       image: map['image'] ?? '',
     );
   }
