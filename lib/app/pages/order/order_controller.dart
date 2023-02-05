@@ -21,6 +21,7 @@ class OrderController extends Cubit<OrderState> {
         status: OrderStatus.loaded,
         paymentTypes: paymentTypes,
       ));
+      print(paymentTypes);
     } catch (e, s) {
       log('Erro ao carregar pagina', error: e, stackTrace: s);
       emit(state.copyWith(

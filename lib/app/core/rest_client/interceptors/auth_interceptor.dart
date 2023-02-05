@@ -2,17 +2,19 @@ import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthInterceptor extends Interceptor {
-  void onResquest(
+  @override
+  void onRequest(
       RequestOptions options, RequestInterceptorHandler handler) async {
     final sp = await SharedPreferences.getInstance();
     final accessToken = sp.getString('access_token');
-    options.headers['Authorization'] = 'Bearer $accessToken';
+    //aqui vc ta lendo do campo certo que e o accesstoken
 
-    print(accessToken);
+    options.headers['Authorization'] = 'Bearer $accessToken';
 
     handler.next(options);
   }
 
+  @override
   void onError(DioError err, ErrorInterceptorHandler handler) async {
     if (err.response?.statusCode == 401) {
       final sp = await SharedPreferences.getInstance();

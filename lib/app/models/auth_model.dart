@@ -21,6 +21,12 @@ class AuthModel {
       accessToken: map['access_token'] as String,
       refreshToken: map['refresh_token'] as String,
     );
+    //do authModel ne? saquei tava dando mta bobeira msm :/ kk
+
+    //por padrao o flutter trabalha com camelCase diferente do que vem dos dados do token qu
+    // e chamado de snake case access_<snake>token
+    //entao a gente sempre faz essa conversao de json porque o json normalmente e snake case
+    // ai como seu authmodel e accessToken e o seu json e access_token, vou abrir o login_controller pra vc ve
   }
 
   String toJson() => json.encode(toMap());
